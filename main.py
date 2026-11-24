@@ -11,8 +11,9 @@ from utils.general import (cv2, non_max_suppression, xyxy2xywh)
 # Could be do with
 # from config import *
 # But we are writing it out for clarity for new devs
-from config import aaMovementAmp, useMask, maskWidth, maskHeight, aaQuitKey, screenShotHeight, confidence, headshot_mode, cpsDisplay, visuals, centerOfScreen
+from config import aaMovementAmp, useMask, maskWidth, maskHeight, aaQuitKey, screenShotHeight, confidence, headshot_mode, cpsDisplay, visuals, centerOfScreen, showToggleIndicator
 import gameSelection
+from toggleIndicator import ToggleIndicator
 
 def main():
     # External Function for running the game selection menu (gameSelection.py)
@@ -33,6 +34,11 @@ def main():
     # Used for colors drawn on bounding boxes
     COLORS = np.random.uniform(0, 255, size=(1500, 3))
 
+    # On-screen AIMBOT: ON/OFF indicator (visible only on your own screen).
+    # Autoaim is active while Caps Lock is toggled on (same control as before).
+    indicator = ToggleIndicator() if showToggleIndicator else None
+    aimActivePrev = None
+
     # Main loop Quit if Q is pressed
     last_mid_coord = None
     with torch.no_grad():
@@ -40,6 +46,15 @@ def main():
 
             # Getting Frame
             npImg = np.array(camera.get_latest_frame())
+
+            # Read the toggle (Caps Lock) once per frame and reflect it in the
+            # on-screen indicator / console so you can see the current state.
+            aimActive = bool(win32api.GetKeyState(0x14) & 0x01)
+            if aimActive != aimActivePrev:
+                print("AIMBOT: {}".format("ON" if aimActive else "OFF"))
+                if indicator is not None:
+                    indicator.set(aimActive)
+                aimActivePrev = aimActive
 
             from config import maskSide # "temporary" workaround for bad syntax
             if useMask:
@@ -120,8 +135,8 @@ def main():
 
                 mouseMove = [xMid - cWidth, (yMid - headshot_offset) - cHeight]
 
-                # Moving the mouse
-                if win32api.GetKeyState(0x14):
+                # Moving the mouse (only while the toggle is on)
+                if aimActive:
                     win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(
                         mouseMove[0] * aaMovementAmp), int(mouseMove[1] * aaMovementAmp), 0, 0)
                 last_mid_coord = [xMid, yMid]
@@ -168,6 +183,8 @@ def main():
                 if (cv2.waitKey(1) & 0xFF) == ord('q'):
                     exit()
     camera.stop()
+    if indicator is not None:
+        indicator.stop()
 
 
 if __name__ == "__main__":

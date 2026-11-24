@@ -29,6 +29,10 @@ visuals = False
 # Smarter selection of people
 centerOfScreen = True
 
+# Show a small on-screen AIMBOT: ON/OFF indicator on your own display so you
+# can see the toggle state. Local overlay only; does not change aim behavior.
+showToggleIndicator = True
+
 # ONNX ONLY - Choose 1 of the 3 below
 # 1 - CPU
 # 2 - AMD
