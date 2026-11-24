@@ -16,6 +16,7 @@ __pycache__
 utils/__pycache__
 models/__pycache__
 venv
+.venv
 *.old
 elite
 !Robloxmodel.pt
