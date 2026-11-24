@@ -17,6 +17,7 @@ utils/__pycache__
 models/__pycache__
 venv
 .venv
+ROBRUN_NOTES.md
 *.old
 elite
 !Robloxmodel.pt

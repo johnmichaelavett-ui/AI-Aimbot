@@ -25,7 +25,7 @@ def main():
 
     # Loading Yolo5 Small AI Model, for better results use yolov5m or yolov5l
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s',
-                           pretrained=True, force_reload=True)
+                           pretrained=True, force_reload=True, trust_repo=True)
     stride, names, pt = model.stride, model.names, model.pt
 
     if torch.cuda.is_available():
